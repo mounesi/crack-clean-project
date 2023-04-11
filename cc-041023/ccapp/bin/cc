@@ -1,0 +1,13 @@
+#!/bin/bash
+DIR_HOME="/home/cc"
+DIR_CC="${DIR_HOME}/ccapp"
+DIR_VENV="${DIR_HOME}/venv"
+FILE_GENICAM="Blackfly BFLY-PGE-12A2M_18541174_GenICam.zip"
+#
+source "${DIR_VENV}/bin/activate"
+export PYTHONPATH="${DIR_CC}/lib:${PYTHONPATH}"
+rm -f "${DIR_HOME}/${FILE_GENICAM}"
+cd "${DIR_CC}"
+python -m crackclean.cc "$@"
+rm -f "${DIR_HOME}/${FILE_GENICAM}"
+

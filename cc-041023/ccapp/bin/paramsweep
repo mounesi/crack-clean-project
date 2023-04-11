@@ -1,0 +1,26 @@
+#!/bin/bash
+DIR_HOME="/home/cc"
+DIR_CC="${DIR_HOME}/ccapp"
+DIR_VENV="${DIR_HOME}/venv"
+#
+TS="$(date +%s%N)"
+#
+IMG="${DIR_HOME}/data/manuvering-03132019175610-46-xoffset169-300px.png"
+LABEL_ID_CRACK="0"
+MASK="${DIR_HOME}/data/manuvering-03132019175610-46-xoffset169-300px.mask2.png"
+MODEL="${DIR_CC}/etc/optimizedQ_123214_tpu.tflite"
+OUTDIR="${DIR_HOME}/paramsweep-out-${TS}"
+VALUE_RATIOS="0.50,0.75,1.00,1.25,1.50"
+DETECT_THRESH="0.55"
+#
+source "${DIR_VENV}/bin/activate"
+export PYTHONPATH="${DIR_CC}/lib:${PYTHONPATH}"
+cd "${DIR_CC}"
+exec python -m util.paramsweep	\
+	-d "${DETECT_THRESH}"	\
+	-i "${IMG}"		\
+	-l "${LABEL_ID_CRACK}"	\
+	-k "${MASK}"		\
+	-m "${MODEL}"		\
+	-o "${OUTDIR}"		\
+	-r "${VALUE_RATIOS}"

@@ -1,0 +1,28 @@
+#!/bin/bash
+DIR_HOME="/home/cc"
+DIR_CC="${DIR_HOME}/ccapp"
+DIR_VENV="${DIR_HOME}/venv"
+#
+TS="$(date +%s%N)"
+#
+INDIR="${DIR_HOME}/data/test_sharp_maneuvering"
+MODEL="${DIR_CC}/etc/optimizedQ_123214_tpu.tflite"
+LABEL_ID_CRACK="0"
+DETECT_THRESH="0.35"
+SIMPLE_THRESH="43"
+ADAPTIVE_THRESH="_0.03"
+ADAPTIVE_RADIUS="24"
+OUTDIR="${DIR_HOME}/imagesweep-out-${TS}"
+#
+source "${DIR_VENV}/bin/activate"
+export PYTHONPATH="${DIR_CC}/lib:${PYTHONPATH}"
+cd "${DIR_CC}"
+exec python -m util.imagesweep	\
+	-i "${INDIR}"		\
+	-m "${MODEL}"		\
+	-l "${LABEL_ID_CRACK}"	\
+	-d "${DETECT_THRESH}"	\
+	-s "${SIMPLE_THRESH}"	\
+	-a "${ADAPTIVE_THRESH}"	\
+	-r "${ADAPTIVE_RADIUS}"	\
+	-o "${OUTDIR}"

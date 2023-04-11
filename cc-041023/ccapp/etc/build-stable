@@ -1,0 +1,83 @@
+#!/bin/bash
+
+set -e
+
+DIR_HOME="/home/cc"
+DIR_CC="${DIR_HOME}/ccapp"
+DIR_VENV="${DIR_HOME}/venv"
+
+CCAPP_BRANCH="master"
+CCAPP_REVISION="HEAD"
+
+CRACKCLEAN_BRANCH="master"
+CRACKCLEAN_REVISION="HEAD"
+
+CRACKDETECT_BRANCH="master"
+CRACKDETECT_REVISION="421de578adfd027428d01395cccaddef24aa7a4e"
+
+UTIL_BRANCH="master"
+UTIL_REVISION="HEAD"
+
+CRACKTHRESH_BRANCH="master"
+CRACKTHRESH_REVISION="HEAD"
+
+# activate venv (needed for building crackthresh)
+source "${DIR_VENV}/bin/activate"
+
+# ensure online
+ping -c 1 -W 1 repo.ahmct.ucdavis.edu. > /dev/null
+
+TSTAMP=$(date +%s%N)
+TMPDIR="/tmp/ccbuild-${TSTAMP}"
+rm -rf "${TMPDIR}"
+mkdir "${TMPDIR}"
+cd "${TMPDIR}"
+
+# ccapp
+git clone crackclean@repo:/srv/git/crackclean/ccapp.git
+cd ccapp
+git checkout "${CCAPP_BRANCH}"
+git checkout -b temp "${CCAPP_REVISION}"
+cd ..
+
+# crackclean
+git clone crackclean@repo:/srv/git/crackclean/crackclean.git
+cd crackclean
+git checkout "${CRACKCLEAN_BRANCH}"
+git checkout -b temp "${CRACKCLEAN_REVISION}"
+cd ..
+
+# crackdetect
+git clone crackclean@repo:/srv/git/crackclean/crackdetect.git
+cd crackdetect
+git checkout "${CRACKDETECT_BRANCH}"
+git checkout -b temp "${CRACKDETECT_REVISION}"
+cd ..
+
+# util
+git clone crackclean@repo:/srv/git/crackclean/util.git
+cd util
+git checkout "${UTIL_BRANCH}"
+git checkout -b temp "${UTIL_REVISION}"
+cd ..
+
+# crackthresh
+git clone crackclean@repo:/srv/git/crackclean/crackthresh.git
+cd crackthresh
+git checkout "${CRACKTHRESH_BRANCH}"
+git checkout -b temp "${CRACKTHRESH_REVISION}"
+# build
+./build.sh
+cd ..
+
+# assemble
+mv -i crackclean ccapp
+mv -i crackdetect ccapp
+mv -i util ccapp
+mkdir ccapp/lib
+mv -i crackthresh/build/lib.*/*.so ccapp/lib
+
+# install
+rm -rf "${DIR_CC}"
+mv "${TMPDIR}"/ccapp "${DIR_CC}"
+rm -rf "${TMPDIR}"
